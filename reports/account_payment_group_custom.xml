@@ -1,0 +1,124 @@
+<odoo>
+    <data>
+        <template id="exe_payment_group_custom" inherit_id="account_payment_group.report_payment_group_document">
+
+            <table class="table" position="after">
+            <!--Detalle de cheques, quitar comentario si el entorno posee el módulo account_check -->
+            <!--    <t t-set="ch" t-value="0" />
+                <t t-as="p" t-foreach="o.payment_ids">
+                    <t t-as="c" t-foreach="p.check_ids">
+                        <t t-set="ch" t-value="1" />
+                    </t>
+                </t>
+                <h5 t-if="ch == 1">Cheques</h5>
+                <table class="table" t-if="ch == 1"> 
+                -->
+                    <!-- In case we want to repeat the header, remove "display: table-row-group" -->
+                <!--
+                    <thead>
+                        <tr style="border-black">
+                            <th class="text-left" name="th_description" style="width:50%;padding:5px">Banco</th>
+                            <th class="text-right" name="th_quantity" style="width:20%; padding:5px">Fecha de Cobro</th>
+                            <th class="text-right" name="th_priceunit" style="width:15%;padding:5px">Número</th>
+                            <th class="text-right" name="th_amount" style="width:15%;padding:5px">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody class="invoice_tbody">
+                        <t t-as="p" t-foreach="o.payment_ids">
+                            <t t-as="c" t-foreach="p.check_ids">
+                                <tr style="font-size:12px">
+                                    <td name="td_back" style="padding:0.25rem">
+                                        <span t-field="c.bank_id.name" />
+                                    </td>
+                                    <td name="td_date" style="padding:0.25rem;text-align:right;">
+                                        <span t-field="c.payment_date" />
+                                    </td>
+                                    <td name="td_name" style="padding:0.25rem;text-align:right;">
+                                        <span t-field="c.number" />
+                                    </td>
+                                    <td name="td_amount" style="padding:0.25rem;text-align:right;">
+                                        <span t-field="c.amount" />
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+                    </tbody>
+                </table>
+                <br />
+                -->
+                <h5>Facturas Relacionadas</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="width:50%;padding:5px">Factura</th>
+                            <th style="width:50%;padding:5px">Monto de Facturas</th>
+                            <th>Monto Pagado</th>
+                        </tr>
+                    </thead>
+                    <tbody class="invoice_tbody">
+                        <tr t-foreach="o.matched_move_line_ids" t-as="f" style="font-size:12px">
+                            <td style="padding:0.50rem">
+                                <span t-if="f.move_id" t-field="f.move_id" />
+                            </td>
+                            <td style="padding:0.50rem">
+                                <span t-if="f.balance" t-field="f.balance" />
+                            </td>
+                            <td style="padding:0.50rem">
+                                <t t-set="payments" t-value="[]" />
+                                <t t-foreach="o.payment_ids" t-as="p">
+                                    <t t-foreach="p.invoice_line_ids.ids" t-as="i">
+                                        <t t-set="payments" t-value="payments + [i]" />
+                                    </t>
+                                </t>
+
+                                <t t-set="credit_move" t-value="request.env['account.partial.reconcile'].sudo().search([('credit_move_id', 'in', payments),('debit_move_id', '=', f.id)])" />
+                                <t t-set="debit_move" t-value="request.env['account.partial.reconcile'].sudo().search([('debit_move_id', 'in', payments),('credit_move_id', '=', f.id)])" />
+                                <t t-set="credit" t-value="0" />
+                                <t t-set="debit" t-value="0" />
+                                <t t-foreach="credit_move" t-as="c">
+                                    <t t-set="credit" t-value="credit + c.amount" />
+                                </t>
+                                <t t-foreach="debit_move" t-as="d">
+                                    <t t-set="debit" t-value="debit + d.amount" />
+                                </t>
+
+                                <t t-if="credit - debit != 0">
+                                    <span t-esc="credit - debit" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}" />
+                                </t>
+                                <t t-if="credit - debit == 0">
+                                    <t t-set="credit" t-value="request.env['account.partial.reconcile'].sudo().search([('debit_move_id', '=', f.id)], limit=1)" />
+                                    <t t-set="debit" t-value="request.env['account.partial.reconcile'].sudo().search([('credit_move_id', '=', f.id)], limit=1)" />
+                                    <span t-esc="credit.amount - debit.amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}" />
+                                </t>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <strong>Total</strong>
+                            </td>
+                            <td class="text-left">
+                                <span t-field="o.matched_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}" />
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <br />
+                <h6>
+                    Diferencia de Pago/Saldo:
+                    <span t-esc="o.unmatched_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}" />
+                </h6>
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <h6 class="text-left">Recibí Conforme:</h6>
+
+            </table>
+
+        </template>
+    </data>
+</odoo>  
