@@ -5,8 +5,9 @@ Verificar para la instalación lo siguiente:
 
   - Los campos computados matched_amount y unmatched_amount del modelo account_payment_group.py deben tener sin comentar el *compute = '_compute_matched_amounts'*
   - La funcion *_compute_matched_amounts* debe quedar de la siguiente manera:
-<html>
-  def _compute_matched_amounts(self):
+
+```
+    def _compute_matched_amounts(self):
         for rec in self:
             if rec.state != 'posted':
                 rec.matched_amount = 0
@@ -27,5 +28,4 @@ Verificar para la instalación lo siguiente:
             else:
                 rec.matched_amount = 0
                 rec.unmatched_amount = 0
-
-</html>
+```
