@@ -20,6 +20,7 @@
                             <th class="text-left" name="th_description" style="width:50%;padding:5px">Banco</th>
                             <th class="text-right" name="th_quantity" style="width:20%; padding:5px">Fecha de Cobro</th>
                             <th class="text-right" name="th_priceunit" style="width:15%;padding:5px">Número</th>
+                            <th class="text-center" name="th_vat" style="width:15%;padding:5px">CUIT</th>
                             <th class="text-right" name="th_amount" style="width:15%;padding:5px">Monto</th>
                         </tr>
                     </thead>
@@ -35,6 +36,9 @@
                                     </td>
                                     <td name="td_name" style="padding:0.25rem;text-align:right;">
                                         <span t-field="c.number" />
+                                    </td>
+                                    <td name="td_owner_vat" style="padding:0.25rem;text-align:center;">
+                                        <span t-field="c.owner_vat" />
                                     </td>
                                     <td name="td_amount" style="padding:0.25rem;text-align:right;">
                                         <span t-field="c.amount" />
